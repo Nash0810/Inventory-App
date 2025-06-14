@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QApplication
 from database import get_db_connection, init_db
-from menu import MainMenu
+from menu import MenuWindow
 
 class LoginWindow(QWidget):
     def __init__(self):
@@ -21,7 +21,7 @@ class LoginWindow(QWidget):
         layout.addWidget(login_btn)
         self.setLayout(layout)
 
-        init_db()
+
 
     def login(self):
         user = self.username.text()
@@ -33,8 +33,10 @@ class LoginWindow(QWidget):
         conn.close()
 
         if result:
+            role = result[0]
             self.hide()
-            self.menu = MainMenu()
+            self.menu = MenuWindow(role=role)
             self.menu.show()
+
         else:
             QMessageBox.warning(self, "Login Failed", "Invalid credentials")

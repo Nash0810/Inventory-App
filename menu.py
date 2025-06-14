@@ -1,37 +1,45 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton
-from product_master import ProductMasterForm
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QLabel
+from PySide6.QtCore import Qt
 from goods_receiving import GoodsReceivingForm
 from sales_form import SalesForm
+from product_master import ProductMasterForm
 
-class MainMenu(QWidget):
-    def __init__(self):
+class MenuWindow(QWidget):
+    def __init__(self, role="operator"):
         super().__init__()
-        self.setWindowTitle("Main Menu")
-        self.setFixedSize(250, 200)
-
+        self.setWindowTitle("Inventory App Menu")
+        self.setFixedSize(300, 300)
         layout = QVBoxLayout()
 
-        btn_product_master = QPushButton("Product Master")
-        btn_goods_receiving = QPushButton("Goods Receiving")
-        btn_sales_form = QPushButton("Sales Form")
+        title = QLabel("Inventory Management")
+        title.setStyleSheet("font-size: 18px; font-weight: bold;")
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
 
-        btn_product_master.clicked.connect(self.open_product_master)
-        btn_goods_receiving.clicked.connect(self.open_goods_receiving)
-        btn_sales_form.clicked.connect(self.open_sales_form)
+        if role in ["admin", "operator"]:
+            self.goods_btn = QPushButton("Goods Receiving")
+            self.goods_btn.clicked.connect(self.open_goods_form)
+            layout.addWidget(self.goods_btn)
 
-        layout.addWidget(btn_product_master)
-        layout.addWidget(btn_goods_receiving)
-        layout.addWidget(btn_sales_form)
+            self.sales_btn = QPushButton("Sales Form")
+            self.sales_btn.clicked.connect(self.open_sales_form)
+            layout.addWidget(self.sales_btn)
+
+        if role == "admin":
+            self.master_btn = QPushButton("Product Master")
+            self.master_btn.clicked.connect(self.open_master_form)
+            layout.addWidget(self.master_btn)
+
         self.setLayout(layout)
 
-    def open_product_master(self):
-        self.product_form = ProductMasterForm()
-        self.product_form.show()
-
-    def open_goods_receiving(self):
+    def open_goods_form(self):
         self.goods_form = GoodsReceivingForm()
         self.goods_form.show()
 
     def open_sales_form(self):
         self.sales_form = SalesForm()
         self.sales_form.show()
+
+    def open_master_form(self):
+        self.master_form = ProductMasterForm()
+        self.master_form.show()

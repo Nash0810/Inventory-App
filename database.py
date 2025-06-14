@@ -63,6 +63,13 @@ def init_db():
             FOREIGN KEY (product_id) REFERENCES product_master(id)
         )
     ''')
+    c.execute('''CREATE TABLE IF NOT EXISTS operators (
+    id INTEGER PRIMARY KEY,
+    username TEXT UNIQUE,
+    password TEXT,
+    role TEXT DEFAULT 'operator'
+    )''')
+    c.execute("INSERT OR IGNORE INTO operators (username, password, role) VALUES ('adminuser', 'adminpass', 'admin')")
 
     # Insert sample operators
     c.execute("INSERT OR IGNORE INTO operators (username, password) VALUES ('operator1', 'pass123')")

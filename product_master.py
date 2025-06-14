@@ -1,59 +1,56 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QFormLayout, QLineEdit, QPushButton, QMessageBox, QFileDialog, QComboBox
+# product_master.py (with filterable product table)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QLabel, QLineEdit,
+                               QPushButton, QTableWidget, QTableWidgetItem, QHBoxLayout, QHeaderView)
+from PySide6.QtCore import Qt
 from database import get_db_connection
-import os
 
 class ProductMasterForm(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Product Master Form")
-        layout = QFormLayout()
+        self.setWindowTitle("Product Master List")
+        self.setFixedSize(800, 600)
 
-        self.barcode = QLineEdit()
-        self.sku = QLineEdit()
-        self.category = QLineEdit()
-        self.subcategory = QLineEdit()
-        self.image_path = QLineEdit()
-        self.name = QLineEdit()
-        self.description = QLineEdit()
-        self.tax = QLineEdit()
-        self.price = QLineEdit()
-        self.unit = QComboBox()
-        self.unit.addItems(["kg", "pcs", "liters"])
+        layout = QVBoxLayout()
 
-        img_btn = QPushButton("Browse Image")
-        img_btn.clicked.connect(self.browse_image)
+        filter_layout = QHBoxLayout()
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Search product name or SKU")
+        self.search_box.textChanged.connect(self.load_data)
+        filter_layout.addWidget(QLabel("Search: "))
+        filter_layout.addWidget(self.search_box)
+        layout.addLayout(filter_layout)
 
-        submit = QPushButton("Add Product")
-        submit.clicked.connect(self.submit_form)
+        self.table = QTableWidget()
+        self.table.setColumnCount(6)
+        self.table.setHorizontalHeaderLabels(["SKU", "Product Name", "Category", "Price", "Unit", "Tax %"])
+        self.table.setSortingEnabled(True)
+        layout.addWidget(self.table)
 
-        layout.addRow("Barcode", self.barcode)
-        layout.addRow("SKU", self.sku)
-        layout.addRow("Category", self.category)
-        layout.addRow("Subcategory", self.subcategory)
-        layout.addRow("Image Path", self.image_path)
-        layout.addRow(img_btn)
-        layout.addRow("Name", self.name)
-        layout.addRow("Description", self.description)
-        layout.addRow("Tax", self.tax)
-        layout.addRow("Price", self.price)
-        layout.addRow("Unit", self.unit)
-        layout.addRow(submit)
+        self.refresh_btn = QPushButton("Refresh")
+        self.refresh_btn.clicked.connect(self.load_data)
+        layout.addWidget(self.refresh_btn)
+
         self.setLayout(layout)
+        self.load_data()
 
-    def browse_image(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Select Product Image")
-        if file_path:
-            self.image_path.setText(file_path)
-
-    def submit_form(self):
+    def load_data(self):
+        keyword = self.search_box.text().lower()
         conn = get_db_connection()
         c = conn.cursor()
-        c.execute('''INSERT INTO product_master
-                     (barcode, sku, category, subcategory, image_path, name, description, tax, price, unit)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                  (self.barcode.text(), self.sku.text(), self.category.text(), self.subcategory.text(),
-                   self.image_path.text(), self.name.text(), self.description.text(),
-                   self.tax.text(), self.price.text(), self.unit.currentText()))
-        conn.commit()
+        if keyword:
+            c.execute("""
+                SELECT sku, name, category, price, unit, tax FROM product_master
+                WHERE LOWER(name) LIKE ? OR LOWER(sku) LIKE ?
+            """, (f"%{keyword}%", f"%{keyword}%"))
+        else:
+            c.execute("SELECT sku, name, category, price, unit, tax FROM product_master")
+        results = c.fetchall()
         conn.close()
-        QMessageBox.information(self, "Saved", "Product Added")
+
+        self.table.setRowCount(len(results))
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        for row, data in enumerate(results):
+            for col, item in enumerate(data):
+                self.table.setItem(row, col, QTableWidgetItem(str(item)))
