@@ -51,7 +51,7 @@ def init_db():
             rate REAL,
             total REAL,
             tax REAL,
-            date_received TEXT,
+            date TEXT,
             FOREIGN KEY (product_id) REFERENCES product_master(id)
         )
     ''')

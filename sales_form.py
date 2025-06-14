@@ -82,7 +82,7 @@ class SalesForm(QWidget):
         self.clear_btn.clicked.connect(self.clear_form)
         self.clear_btn.setStyleSheet("QPushButton { padding: 8px; }")
 
-        button_layout.addWidget(self.calculate_btn)
+        #button_layout.addWidget(self.calculate_btn)
         button_layout.addWidget(self.save_btn)
         button_layout.addWidget(self.clear_btn)
 
