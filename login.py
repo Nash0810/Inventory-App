@@ -37,9 +37,9 @@ class LoginWindow(QWidget):
         layout.addWidget(login_btn)
 
         # Sample credentials info
-        info_label = QLabel("Sample Logins:\nAdmin: admin/admin123\nOperator: operator1/pass123")
-        info_label.setStyleSheet("font-size: 10px; color: gray; margin-top: 10px;")
-        layout.addWidget(info_label)
+        #info_label = QLabel("Sample Logins:\nAdmin: admin/admin123\nOperator: operator1/pass123")
+        #info_label.setStyleSheet("font-size: 10px; color: gray; margin-top: 10px;")
+        #layout.addWidget(info_label)
 
         self.setLayout(layout)
 
