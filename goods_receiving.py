@@ -64,17 +64,17 @@ class GoodsReceivingForm(QWidget):
         # Calculated fields (read-only)
         self.subtotal = QLineEdit()
         self.subtotal.setReadOnly(True)
-        self.subtotal.setStyleSheet("background-color: #f0f0f0;")
+        #self.subtotal.setStyleSheet("background-color: #f0f0f0;")
         form_layout.addRow("Subtotal (₹):", self.subtotal)
 
         self.tax_amount = QLineEdit()
         self.tax_amount.setReadOnly(True)
-        self.tax_amount.setStyleSheet("background-color: #f0f0f0;")
+        #self.tax_amount.setStyleSheet("background-color: #f0f0f0;")
         form_layout.addRow("Tax Amount (₹):", self.tax_amount)
 
         self.total = QLineEdit()
         self.total.setReadOnly(True)
-        self.total.setStyleSheet("background-color: #f0f0f0; font-weight: bold;")
+        #self.total.setStyleSheet("background-color: #f0f0f0; font-weight: bold;")
         form_layout.addRow("Total Amount (₹):", self.total)
 
         # Date
